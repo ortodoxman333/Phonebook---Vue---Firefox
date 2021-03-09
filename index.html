@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="UTF-8">
+        <script src = "https://cdn.jsdelivr.net/npm/vue"></script>
+        <style>
+            #app{
+                margin: 10px;
+                padding: 10px;
+            }
+            #form {
+                margin: 10px;
+                padding: 10px 5px;
+            }
+           span {
+            display:inline-block;
+            width:300px; 
+             margin: 5px 0 5px 5px;
+             padding: 5px 5px 0 5px;
+             background-color:rgb(238, 176, 176) ;
+             border-top: 1px solid gray;
+             border-bottom:1px solid gray ;
+             border-left:1px solid gray ;
+            
+
+           }
+           #delete {
+               height: 25px;
+               width: 22px;
+               background-image: url(pics/icon-delete.png);
+               background-size: 80%;
+               background-repeat: no-repeat;
+               background-position: center;
+               padding: 3px 6px 3px 6px;
+               cursor: pointer;
+           }
+           #container {
+               margin: 5px;
+           }
+           label,input,button {
+               margin:5px 5px 5px 0;
+               padding:5px 5px 5px 0;
+           }
+        
+        </style>
+        <title>Imenik</title>
+    </head>
+    <body>
+        <div id="app">
+
+            <div id ="form">
+                <form>
+                    <label>Ime i Prezime</label><br>
+                    <input v-model="name" id="name" type="text" placeholder="ime i prezime"><br>
+                    <label>Broj telefona</label><br>
+                   <list-component></list-component>
+                    <input v-model="phone" id="phone" type="tel" placeholder="+555(0)65-111-111" list="country_code" pattern="+[0-9]{5}-[0-9]{3}-[0-9]{3}"  ><br>
+                    
+                        <button v-on:click="saveData()">Submit</button>
+                </form>
+
+            </div>
+           <div>
+           {{storageData}}
+           </div>
+          
+                <div  v-for="(data,idx) in allData" >
+                    <div id="container">
+                        <span > {{idx}}. {{data}} </span><button id="delete" @click="clearData(data)"></button>
+                    </div>
+                        
+                </div>
+        </div>
+        
+
+        <script>
+            var allData = [];
+            Vue.component ("list-component", {
+                template:` <datalist id="country_code">
+                         <option value="+381">Srbija</option>
+                         <option value="+382">Crna Gora</option>
+                         <option value="+385">Hrvatska</option>
+                         <option value="+386">Slovenia</option>
+                         <option value="+387">Bosna i hercegovina</option>
+                    </datalist>`
+            })
+            var mainVue = new Vue ({
+                el:"#app",
+                data : function() {
+                    return {
+                     name: "",
+                     phone: "",
+                     allData : allData
+
+                }
+                },
+                methods : {
+                       saveData () {
+                           localStorage.setItem(this.name,JSON.stringify(this.phone));
+                       },
+                        clearData(data) {
+                            let keyFirst = data.split(":");
+                            localStorage.removeItem(keyFirst[0]);
+                            return location.reload();
+                            }
+                   
+                    },
+                    computed : {
+                     storageData: function () {
+                        var allKeys=Object.keys(localStorage);
+                         for (var i=0;i<allKeys.length;i++) {
+                             var a = allKeys[i];
+                             var b = localStorage.getItem(a);
+                             var c = a + ":" + " "+JSON.parse(b);
+                             allData.push(c);
+                         }
+                        }
+                    },
+                watch : {
+                   
+            }  
+            })
+        </script>
+
+    </body>
+</html>
